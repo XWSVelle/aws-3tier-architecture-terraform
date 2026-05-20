@@ -70,7 +70,7 @@ S3 Bucket for Uploaded Files
 
 ## Architecture Diagram
 
-sosoco-version1\aws-3tier-architecture-terraform\Architecture\sosoco-v1-diagram.png
+![SOSOCO Architecture](Architecture/sosoco-v1-diagram.png)
 
 ---
 
