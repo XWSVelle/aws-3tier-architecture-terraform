@@ -1,10 +1,10 @@
 name: Deploy Image to Docker Hub
 
-# 1. Triggers: Run when code is pushed to the main branch
+# 1. Triggers: Run when code is pushed to the version3 branch
 on:
   push:
     branches:
-      - main
+      - version3
 
 jobs:
   release:
