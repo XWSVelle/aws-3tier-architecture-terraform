@@ -173,7 +173,7 @@ resource "aws_lb" "sosoco_alb" {
 
 # 1. CREATE THE WAITING ROOM; target group (it helps the ALB to target the EC2 instance)
  # By writing that block, you have defined:
-resource "aws_lb_target_group" "alb_target_group" {
+resource "aws_lb_target_group" "sosoco_alb_target_group" {
   name     = "app-alb-tg"  #The Name: tf-app-alb-tg
   port     = 80            # The Port & Protocol: It’s ready for web traffic on Port 80.
   protocol = "HTTP"        
@@ -192,20 +192,8 @@ resource "aws_lb_target_group" "alb_target_group" {
   }
 }
 
-# 2.1. PUT THE WORKERS (EC2/VM MACHINE) INSIDE THE ROOM; TG ATTACHMENT 
- # This connects your specific EC2 to your specific Target Group
-resource "aws_lb_target_group_attachment" "sosoco_attachment1" {
-  target_group_arn = aws_lb_target_group.alb_target_group.arn
-  target_id        = aws_instance.sosoco_machine1.id 
-  port             = 80
-}
-
-# 2.2. PUT THE SECOND WORKER INSIDE THE ROOM
-resource "aws_lb_target_group_attachment" "sosoco_attachment2" {
-  target_group_arn = aws_lb_target_group.alb_target_group.arn
-  target_id        = aws_instance.sosoco_machine2.id 
-  port             = 80
-}
+## no ec2 attachement needed since the ASG takes care of the instances automatically.
+## because you told the ASG TARGET_GROUP_ARN
 
 
 # 3. THE INSTRUCTOR THAT IS AT THE ENTRANCE OF THE ROOM: CHECKS THAT ALL INCOMING TRAFFIC COMES EXACTLY FROM PORT 80 
@@ -221,7 +209,7 @@ resource "aws_lb_listener" "sosoco_http_listener" {
   # 3. What is the instruction? (The "Action")
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.alb_target_group.arn
+    target_group_arn = aws_lb_target_group.sosoco_alb_target_group.arn
   }
 }
 

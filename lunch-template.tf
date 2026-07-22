@@ -13,6 +13,19 @@ iam_instance_profile {
   arn = aws_iam_instance_profile.sosoco_instance_profile.arn
 }
 
+# USER DATA SCRIPT that every EC2 will launch 
+    #sudo usermod -aG docker ec2-user   #adding ec2-user to the docker group
+user_data = base64encode(<<-EOF
+  #!/bin/bash
+  sudo yum update -y
+  sudo yum install docker -y
+  sudo usermod -aG docker ec2-user
+  sudo systemctl start docker
+  sudo docker pull xwsvelle/sosoco-app:latest
+  sudo docker run -d -p 80:80 xwsvelle/sosoco-app:latest
+EOF
+)
+
 key_name = var.sosoco_key_pair
   #adding tags so the the instance will have a name during creation 
   tag_specifications {
@@ -21,19 +34,6 @@ key_name = var.sosoco_key_pair
       Name = var.sosoco_tag
     }
   }
-
-## USER DATA SCRIPT that every EC2 will launch 
-      #sudo usermod -aG docker ec2-user #adding ec2-user to the docker goup
-  user_data = base64encode(<<-EOF
-  #!/bin/bash
-  sudo yum update -y
-  sudo yum install docker -y 
-  sudo usermod -aG docker ec2-user 
-  sudo systemctl start docker
-  sudo docker pull xwsvelle/sosoco-app:latest
-  sudo docker run -d -p 80:80 xwsvelle/sosoco-app:latest
-EOF
-)
   
   }
 
@@ -49,7 +49,7 @@ resource "aws_autoscaling_group" "sosoco_asg" {
   # Link to your existing Launch Template
   launch_template {
     id      = aws_launch_template.sosoco_template.id
-    version = "$Latest" # Always use the most recent version of the template 
+    version = "$Latest" # Always use the most recent version of the template
   }
 
   # Where should the instances be launched? 
